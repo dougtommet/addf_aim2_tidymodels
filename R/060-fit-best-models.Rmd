@@ -1,0 +1,127 @@
+
+```{r}
+rm(list = setdiff(ls(), lsf.str()))
+source(here::here("R", "002-folder_paths_and_options.R"))
+
+results_list <- readRDS(file=path(r.objects.folder.tidymodel, "060_results_list.rds"))
+
+predictions  <- readRDS(file=path(r.objects.folder.tidymodel, "060_predictions.rds"))
+results_conf <- readRDS(file=path(r.objects.folder.tidymodel, "060_results_conf.rds"))
+model_names  <- readRDS(file=path(r.objects.folder.tidymodel, "040_model_names.rds"))
+model_df     <- readRDS(file=path(r.objects.folder.tidymodel, "040_model_df.rds"))
+decline.cutpoints <- readRDS(file=path(r.objects.folder.tidymodel,
+                                       "060_decline_cutpoints.rds"))
+
+models_to_present <- model_names[!model_names %in% c("svm_poly", "svm_rbf")]
+```
+
+# Results
+
+## Continuous outcome models
+
+This is the evaluation of the models in the testing set.
+
+```{r}
+### Get the R2
+rsq_results <- map(.x = results_list, ~rsq(.x, vdgcp_slope36m, .pred)) %>%
+  enframe() %>%
+  bind_cols(model = model_df) %>%
+  unnest(cols = c(value)) %>%
+  select(model, model_fct, .estimate) %>%
+  rename(rsq = .estimate) %>%
+  mutate(linear_rsq = case_when(model=="linear" ~ rsq)) %>%
+  fill(linear_rsq, .direction = "down") %>%
+  mutate(rsq_improvement = 100*(rsq - linear_rsq)/linear_rsq) %>%
+  select(-linear_rsq)
+
+### Get the RMSE
+rmse_results <- map(.x = results_list, ~rmse(.x, vdgcp_slope36m, .pred)) %>%
+  enframe() %>%
+  bind_cols(model = model_df) %>%
+  unnest(cols = c(value)) %>%
+  select(model, model_fct, .estimate) %>%
+  rename(rmse = .estimate) %>%
+  mutate(linear_rmse = case_when(model=="linear" ~ rmse)) %>%
+  fill(linear_rmse, .direction = "down") %>%
+  mutate(rmse_improvement = 100*(linear_rmse - rmse)/linear_rmse) %>%
+  select(-linear_rmse)
+
+rmse_results %>%
+  left_join(rsq_results, by = c("model", "model_fct")) %>%
+  filter(model %in% models_to_present) %>%
+  select(-model) %>%
+  gt(rowname_col = "model_fct") %>%
+  tab_header(title = "Model performance") %>%
+  fmt_number(columns = vars(rmse), decimals = 3) %>%
+  fmt_number(columns = vars(rsq, rmse_improvement), decimals = 2) %>%
+  fmt_number(columns = vars(rsq_improvement), decimals = 1) %>%
+  cols_label(
+    rmse = "RMSE",
+    rsq = "R2",
+    rmse_improvement = "RMSE improvement (%)",
+    rsq_improvement = "R2 improvement (%)"
+  ) %>%
+  tab_stubhead(label = "Model") %>%
+  tab_options(table.font.size = pct(80))
+
+```
+
+
+Figure of observed versus predicted slopes.
+
+```{r, fig.height=9, fig.retina=TRUE}
+predictions %>%
+  filter(model %in% models_to_present) %>%
+  ggplot(aes(x = vdgcp_slope36m, y = .pred, color = model_fct)) +
+    geom_point() +
+    geom_smooth(se = FALSE, color = "black") +
+    geom_abline(slope=1, color = "gray50") +
+    geom_vline(aes(xintercept = -.5), color = "gray50") +
+    facet_wrap(vars(model_fct)) +
+    scale_x_continuous("Truth", 
+                       limits = c(-1.25, 0.25), 
+                       breaks = seq(-1.5, 0.5, by = 0.5)) +
+    scale_y_continuous("Prediction", 
+                       limits = c(-1.25, 0.25), 
+                       breaks = seq(-1.5, 0.5, by = 0.5))  +
+    geom_hline(data = decline.cutpoints %>%
+                    filter(model %in% models_to_present), 
+               aes(yintercept = .pred_cutpoint),
+               color = "gray50") +
+    QSPthemes::theme_qsp1() +
+    theme(legend.position="none",
+          plot.caption = element_text(hjust = 0)) +
+  labs(caption = "Vertical line at slope = 0.5.  Horizontal line at 80th percentile of predictions.")
+
+```
+
+```{r, eval = FALSE}
+
+foo_summary <- results_conf %>%
+  select(model, conf_summary) %>%
+  unnest(cols = c(conf_summary)) %>%
+  select(-.estimator) %>%
+  pivot_wider(names_from = .metric, values_from = .estimate)
+
+foo_tidy <- results_conf %>%
+  select(model, conf_tidy) %>%
+  unnest(cols = c(conf_tidy)) %>%
+  pivot_wider(names_from = name, values_from = value) %>%
+  rename(tp = cell_1_1) %>%
+  rename(fn = cell_2_1) %>%
+  rename(fp = cell_1_2) %>%
+  rename(tn = cell_2_2) 
+
+foo_tidy %>%
+  left_join(foo_summary, by = "model") %>%
+  select(model, tp, fn, fp, tn, sens, spec, ppv, npv, f_meas, j_index, kap, bal_accuracy) %>%
+  kable(digits = c(0, rep(0, 4), rep(3, 8)),
+        col.names = c("Model", "True Pos", "False Neg", "False Pos", "True Neg", 
+                      "Sens", "Spec", "PPV", "NPV", 
+                      "F1", "Youden's J", "Kappa", "Balanced Accuracy")) %>%
+  kable_styling(bootstrap_options = kable.styling.bootstrap.option, 
+                full_width = F, position = kable.styling.position.option)
+
+
+
+```

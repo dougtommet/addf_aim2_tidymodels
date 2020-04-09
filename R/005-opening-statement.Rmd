@@ -1,0 +1,42 @@
+
+# Objective
+
+The objective of this aim is to build models to predict cognitive decline.  
+
+## Modeling
+
+We used two approaches to predict cognitive decline.  
+
+1.  The first was to model cognitive decline as a continuous outcome.  
+2.  The second was to dichotomize it at -0.5, and then predict whether or not someone experienced cognitive decline.  
+
+## Models
+
+The models used are:
+
+  1.  Linear Regression 
+  2.  Gradient Boosted Models
+  3.  Lasso and Elastic-net Regularized Regression
+  4.  Random Forests
+  5.  Neural Network
+  6.  ~~Support Vector Machines - linear kernel~~
+  7.  ~~Support Vector Machines - polynomial kernel~~
+  8.  Multivariate adaptive regression splines
+  9.  K-nearest neighbors
+  
+## Cross validation
+
+The data was split into training (75%, n = 421) and testing (25%, n = 139) sets, stratified by cognitive slope.  Cross-validtion was used in the training set to tune the machine learning models. Within the training set, 25 bootstrap samples were taken.  The models were trained on the subjects selected by the bootstrap (analysis set (n = 421)) and evaluated on the unselected samples (assessment set (~37%, n = 145-166)).
+
+## Covariates
+
+The same sets of covariates were used as in the delirium prediction models.  Missing values are single imputed using k-nearest neighbors.
+
+
+  
+
+
+
+
+
+

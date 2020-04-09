@@ -1,0 +1,122 @@
+
+```{r}
+rm(list = setdiff(ls(), lsf.str()))
+source(here::here("R", "002-folder_paths_and_options.R"))
+
+
+predictions_dich  <- readRDS(file=path(r.objects.folder.tidymodel,
+                                       "065_predictions_dich.rds"))
+results_conf_dich <- readRDS(file=path(r.objects.folder.tidymodel,
+                                       "065_results_conf_dich.rds"))
+model_names_dich  <- readRDS(file=path(r.objects.folder.tidymodel,
+                                       "045_model_names_dich.rds"))
+model_df_dich     <- readRDS(file=path(r.objects.folder.tidymodel, 
+                                       "045_model_df_dich.rds"))
+
+decline.cutpoints_dich <- readRDS(file=path(r.objects.folder.tidymodel,
+                                       "065_decline_cutpoints_dich.rds"))
+
+models_to_present_dich <- model_names_dich[!model_names_dich %in% 
+                                             c("svm_poly", "svm_rbf")]
+```
+
+## Dichotomous outcome models
+
+```{r}
+# predictions_dich %>%
+#   filter(model %in% models_to_present_dich) %>%
+#   group_by(model) %>%
+#   roc_curve(true_decline, .pred_Decline) %>%
+#   ggplot(aes(x = 1 - specificity, y = sensitivity, color = model)) +
+#   geom_line() +
+#   QSPthemes::theme_qsp1()
+
+predictions_dich %>%
+  mutate(true_decline1 = case_when(true_decline=="Decline" ~ 1,
+                                   true_decline=="No Decline" ~ 0)) %>%
+  filter(model %in% models_to_present_dich) %>%
+  ggplot(aes(d = true_decline1, m = .pred_Decline, color = model_fct)) +
+    plotROC::geom_roc(n.cuts = 0, labels = FALSE) +
+    QSPthemes::theme_qsp1() +
+    scale_x_continuous("1 - specificity") +
+    scale_y_continuous("sensitivity") +
+    scale_color_discrete("Model")
+```
+
+
+```{r}
+
+foo_summary <- results_conf_dich %>%
+  select(model_fct, conf_summary) %>%
+  unnest(cols = c(conf_summary)) %>%
+  select(-.estimator) %>%
+  pivot_wider(names_from = .metric, values_from = .estimate) %>%
+  ungroup()
+
+foo_auc <- results_conf_dich %>%
+  select(model_fct, auc) %>%
+  unnest(cols = c(auc)) %>%
+  select(-.estimator) %>%
+  rename(auc = .estimate) %>%
+  ungroup()
+
+foo_tidy <- results_conf_dich %>%
+  select(model_fct, conf_tidy) %>%
+  unnest(cols = c(conf_tidy)) %>%
+  pivot_wider(names_from = name, values_from = value) %>%
+  rename(tp = cell_1_1) %>%
+  rename(fn = cell_2_1) %>%
+  rename(fp = cell_1_2) %>%
+  rename(tn = cell_2_2) %>%
+  ungroup()
+
+```
+
+The predicted probability of having cognitive decline was dichotomized at the 20th percentile to match the prevalence of cognitive decline.
+
+Cross-tab table for observed versus predicted cognitive decline.
+```{r}
+foo_tidy %>%
+  filter(model %in% models_to_present_dich) %>%
+  select(-model) %>%
+  gt(rowname_col = "model_fct") %>%
+  tab_header(title = "True Cognitive Decline vs Predicted Decline") %>%
+  tab_stubhead(label = "Model") %>%
+  cols_label(
+    tp = "True Positive",
+    fn = "False Negative",
+    fp = "False Positive",
+    tn = "True Negative"
+  ) %>%
+  tab_options(table.font.size = pct(80))
+
+```
+
+Summary statistics from cross-tab tables.
+```{r}
+foo_auc %>%
+  left_join(foo_summary, by = c("model", "model_fct")) %>%
+  filter(model %in% models_to_present_dich) %>%
+  select(model_fct, auc, sens, spec, ppv, npv, 
+         f_meas, j_index, kap, bal_accuracy) %>%
+  gt(rowname_col = "model_fct") %>%
+  tab_header(title = "Model summary statistics") %>%
+  tab_stubhead(label = "Model") %>%
+  fmt_number(columns = vars(auc, sens, spec, ppv, npv, 
+         f_meas, j_index, kap, bal_accuracy), decimals = 2) %>% 
+  cols_label(
+    auc = "AUC", 
+    sens = "Sens", 
+    spec = "Spec", 
+    ppv = "PPV", 
+    npv = "NPV", 
+    f_meas = "F1", 
+    j_index = "Youden's J", 
+    kap = "Kappa", 
+    bal_accuracy = "Balanced Accuracy"
+  ) %>%
+  tab_options(table.font.size = pct(80))
+
+
+
+```

@@ -1,0 +1,38 @@
+
+```{r}
+sages_table1_juiced  <- readRDS(file=path(r.objects.folder.tidymodel,
+                                          "035_sages_table1_juiced.rds"))
+
+
+```
+
+# Table 1
+
+These are the variables used in the machine learning analyses.
+```{r}
+
+sages_table1_juiced %>%
+  select(-studyid, -testing_fct) %>%
+  gtsummary::tbl_summary(by = testing_char,
+                         statistic = list(all_continuous() ~ "{mean} ({sd})", 
+                                          all_categorical() ~ "{n} / {N} ({p}%)"),
+                         missing_text = "Missing",
+                         type = list(vdcci ~ "continuous")) %>%
+  # add_stat_label() %>%
+  add_overall() %>%
+  as_gt() %>%
+  cols_move_to_end(columns = c(5, 4)) %>%
+  tab_row_group(group = "Insurance Type", rows = 77:80) %>%
+  tab_row_group(group = "Lab values (10%)", rows = 63:76) %>%
+  tab_row_group(group = "Lab values (Raw)", rows = 48:62) %>%
+  tab_row_group(group = "Surgery", rows = 44:47) %>%
+  tab_row_group(group = "Comorbidities", rows = 30:43) %>%
+  tab_row_group(group = "Health status", rows = 12:29) %>%
+  tab_row_group(group = "Health behaviors", rows = 8:11) %>%
+  tab_row_group(group = "Demographics", rows = 2:7) %>%
+  tab_row_group(group = "Outcome", rows = 1) %>%
+  tab_options(table.font.size = pct(80))
+
+
+```
+

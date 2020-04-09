@@ -1,0 +1,25 @@
+
+
+```{r}
+rm(list = setdiff(ls(), lsf.str()))
+source(here::here("R", "002-folder_paths_and_options.R"))
+
+tuned_models_list <- readRDS(file=path(r.objects.folder.tidymodel,
+                                       "050_tuned_models_list.rds"))
+model_names     <- readRDS(file=path(r.objects.folder.tidymodel, "040_model_names.rds"))
+
+```
+
+# Summary tuning parameters
+
+## Linear Regression tuning parameters
+
+These are the best tuning parameters for each model.
+
+```{r}
+best_hyperparameters <- map(tuned_models_list, tune::show_best, 
+                            metric = "rmse", maximize = FALSE)
+names(best_hyperparameters) <- model_names
+best_hyperparameters
+```
+

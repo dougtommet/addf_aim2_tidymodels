@@ -1,0 +1,55 @@
+---
+title: "ADDF/RISE Machine Learning"
+author: "Doug Tommet"
+date: '`r Sys.Date()`'
+params:
+  tune_models: FALSE
+output:
+  html_document:
+    keep_md: yes
+    theme: cerulean
+    toc: yes
+    toc_float: yes
+---
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+source(here::here("R", "001-libraries.R"))
+source(here::here("R", "002-folder_paths_and_options.R"))
+```
+
+```{r}
+if (params$tune_models) {
+  source(here("R", "010-read-data.R"))
+  source(here("R", "020-transform-data.R"))
+  source(here("R", "021-create-variable-metadata.R"))
+  source(here("R", "030-split-data.R"))
+  source(here("R", "035-table1.R"))
+  source(here("R", "040-specify-models.R"))
+  source(here("R", "045-specify-models-dich.R"))
+  source(here("R", "050-tune-models.R"))
+  source(here("R", "055-tune-models-dich.R"))
+}
+source(here("R", "060-fit-best-models.R"))
+source(here("R", "065-fit-best-models-dich.R"))
+
+
+```
+
+```{r, child = here("R", "005-opening-statement.Rmd")}
+```
+
+```{r, child = here("R", "035-table1.Rmd")}
+```
+
+```{r, child = here("R", "050-tune-models.Rmd"), eval=FALSE}
+```
+
+```{r, child = here("R", "055-tune-models-dich.Rmd"), eval=FALSE}
+```
+
+```{r, child = here("R", "060-fit-best-models.Rmd")}
+```
+
+```{r, child = here("R", "065-fit-best-models-dich.Rmd")}
+```

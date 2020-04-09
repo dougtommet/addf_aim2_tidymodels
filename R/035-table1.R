@@ -1,0 +1,217 @@
+rm(list = setdiff(ls(), lsf.str()))
+source(here::here("R", "002-folder_paths_and_options.R"))
+
+sages.combined <- readRDS(file=path(r.objects.folder.tidymodel, "030_sages_combined.rds"))
+
+
+sages_table1_recipe <- recipes::recipe(vdgcp_slope36m ~ ., data = sages.combined) %>%
+  update_role(studyid, new_role = "id") %>%
+  update_role(testing_fct, new_role = "dataset") %>%
+  update_role(testing_char, new_role = "dataset") %>%
+  recipes::step_dummy(all_nominal(), -all_outcomes(), -has_role("id"), -has_role("dataset")) 
+
+sages_table1_prepped <- prep(sages_table1_recipe, training = sages.combined)
+sages_table1_juiced <- juice(sages_table1_prepped)
+# skimr::skim(sages_recipe_table1_juiced)
+
+sages_table1_juiced <- sages_table1_juiced %>%
+  select(
+    studyid,
+    vdgcp_slope36m,
+    vdage, 
+    vdfemale_Female,
+    vdeduc_r,
+    vdnonwhite_Nonwhite,
+    vdesl_ESL,
+    vdlivesalone_Alone,
+    vdsmokingstatus_Past_smoker,
+    vdsmokingstatus_Current_smoker,
+    vdalcohol_Five_times_a_week_or_more,
+    vdadlany_Impairment,
+    vdiadlany_Impairment, 
+    vdiadlanyc_Impairment, 
+    vdhearingimp_Impairment,
+    # vddrisk93_1_Impairment,
+    vdfriedfrail1_Weight_loss,
+    vdfriedfrail4_Low_grip_strength,
+    vdfriedfrail5_Slow_timed_walk,
+    
+    vdgds15,
+    dep01_Depression..Chart.,
+    vd3ms,
+    vdbmi3,
+    vdiqc_proxy,
+    # ci01_Cognitive.Impairment..Chart.,
+    vdcci,
+    vdcci3_cci_1,
+    vdcci3_cci_2_7,
+    vdvascom_Vascular.comorbidity,
+    
+    comorbid.diab_mod_Diabetes...Mild.to.moderate,
+    comorbid.tumor_Tumor,
+    comorbid.pvd_Peripheral.vascular.disease,
+    comorbid.mi_Myocardial.infarction,
+    comorbid.ctd_Connective.tissue.disease,
+    comorbid.crd_Chronic.respiratory.disease,
+    comorbid.cs_Carotid.stenosis,
+    comorbid.diab_sev_Diabetes...Severe.with.end.organ.damage,
+    comorbid.chf_Congestive.heart.failure,
+    comorbid.stroke_Stroke,
+    
+    vdsurg_Vascular,
+    vdsurg_Gastrointestinal,
+    op01_3_ASA.class._3_4,
+    vdanesth_spi_Any.Spinal.Anesthesia,
+    
+    vdlab01a_imp,
+    vdlab02a_imp,
+    vdlab03a_imp,
+    vdlab04a_imp,
+    vdlab05a_imp,
+    vdlab06a_imp,
+    vdlab09a_imp,
+    vdlab10a_imp,
+    vdlab11a_imp,
+    vdlab12a_imp,
+    vdlab13a_imp,
+    vdlab15a_imp,
+    lab.anion.gap,
+    lab.corrected.calcium,
+    lab.bun.cre.ratio,
+    # lab.wbc.lo_WBC....2,
+    # lab.wbc.hi_WBC....12,
+    # lab.hct.lo_HCT....30,
+    # lab.hct.hi_HCT....50,
+    # lab.bun.hi_BUN....20,
+    # lab.cre.hi_CRE....1.8,
+    # lab.sod.lo_SOD....132,
+    # lab.sod.hi_SOD....148,
+    # lab.pot.lo_POT....3.1,
+    # lab.pot.hi_POT....5.5,
+    # lab.anion.hi_Anion.Gap....16,
+    # lab.alt.hi_ALT....50,
+    # lab.ast.hi_AST....50,
+    # lab.bil.hi_BIL....1.5,
+    # lab.alb.lo_ALB....3.5,
+    # lab.alb.hi_ALB....5.2,
+    # lab.cal.lo_CAL....8.5,
+    # lab.cal.hi_CAL....10.5,
+    # lab.glu.lo_GLU....50,
+    # lab.glu.hi_GLU....190,
+    # lab.bun.cre.hi_BUN.CRE....18,
+    # lab.o2.lo_O2....92,
+    lab.wbc.lo.10_WBC.lowest.10.,
+    lab.wbc.hi.10_WBC.highest.10.,
+    lab.hct.lo.10_HCT.lowest.10.,
+    lab.hct.hi.10_HCT.highest.10.,
+    lab.cre.hi.10_CRE.highest.10.,
+    lab.sod.lo.10_SOD.lowest.10.,
+    lab.sod.hi.10_SOD.highest.10.,
+    lab.pot.lo.10_POT.lowest.10.,
+    lab.pot.hi.10_POT.highest.10.,
+    lab.alt.hi.10_ALT.highest.10.,
+    lab.ast.hi.10_AST.highest.10.,
+    lab.bil.hi.10_BIL.highest.10.,
+    lab.bun.cre.hi.10_BUN.CRE.highest.10.,
+    lab.o2.lo.10_O2.lowest.10.,
+    
+    # ins01_No.Insurance,
+    ins02_No.Medicare,
+    ins03_No.Private.Insurance,
+    ins04_Medicaid,
+    ins05_Other.Insurance,
+    
+    testing_fct,
+    testing_char
+  ) %>%
+  set_variable_labels(
+    vdgcp_slope36m = "Cognitive slope (36M)",
+    vdage = "Age",
+    vdfemale_Female = "Female",
+    vdeduc_r = "Education",
+    vdnonwhite_Nonwhite = "Nonwhite",
+    vdesl_ESL = "English is second language",
+    vdlivesalone_Alone = "Lives alone",
+    vdsmokingstatus_Past_smoker = "Past smoker",
+    vdsmokingstatus_Current_smoker = "Current smoker",
+    vdalcohol_Five_times_a_week_or_more = "Alcohol > 5/week",
+    vdadlany_Impairment = "ADL (any)",
+    vdiadlany_Impairment = "IADL (any)",  
+    vdiadlanyc_Impairment = "IADL cognitive (any)", 
+    vdhearingimp_Impairment = "Hearing impairment", 
+    vdfriedfrail1_Weight_loss = "Fraility - Weight Loss",
+    vdfriedfrail4_Low_grip_strength = "Fraility - Low Grip Strength", 
+    vdfriedfrail5_Slow_timed_walk = "Fraility - Slow Timed Walk", 
+    
+    vdgds15 = "Depression (GDS 15)",
+    dep01_Depression..Chart. = "Evidence of Depression (Chart)",
+    vd3ms = "3MS",
+    vdbmi3 = "BMI",
+    vdiqc_proxy = "IQCODE (proxy)",
+    vdcci = "Charlson Comorbidity Index", 
+    vdcci3_cci_1 = "Charlson Comorbidity Index = 1",
+    vdcci3_cci_2_7 = "Charlson Comorbidity Index = 2-7",
+    vdvascom_Vascular.comorbidity = "Vascular Comorbidity",
+    
+    comorbid.diab_mod_Diabetes...Mild.to.moderate = "Diabetes - mild to moderate",  
+    comorbid.tumor_Tumor = "Tumor", 
+    comorbid.pvd_Peripheral.vascular.disease = "Peripheral vascular disease",
+    comorbid.mi_Myocardial.infarction = "Myocardial infarction",  
+    comorbid.ctd_Connective.tissue.disease = "Connective tissue disease", 
+    comorbid.crd_Chronic.respiratory.disease = "Chronic respiratory disease", 
+    comorbid.cs_Carotid.stenosis = "Carotid stenosis",  
+    comorbid.diab_sev_Diabetes...Severe.with.end.organ.damage = 
+      "Diabetes - severe with end organ damage",
+    comorbid.chf_Congestive.heart.failure = "Congestive heart failure", 
+    comorbid.stroke_Stroke = "Stroke",
+    
+    vdsurg_Vascular = "Surgery Type - Vascular",
+    vdsurg_Gastrointestinal = "Surgery Type - Gastrointestinal",
+    op01_3_ASA.class._3_4 = "ASA class",
+    vdanesth_spi_Any.Spinal.Anesthesia = "Anesthesia Type",
+    
+    vdlab01a_imp = "WBC",
+    vdlab02a_imp = "Hematocrit",
+    vdlab03a_imp = "BUN", 
+    vdlab04a_imp = "Creatinine",
+    vdlab05a_imp = "Sodium",
+    vdlab06a_imp = "Potassium", 
+    vdlab09a_imp = "Glucose", 
+    vdlab10a_imp = "ALT", 
+    vdlab11a_imp = "AST", 
+    vdlab12a_imp = "Bilirubin", 
+    vdlab13a_imp = "Albumin", 
+    vdlab15a_imp =  "O2 saturation",  
+    lab.anion.gap = "Anion Gap",
+    lab.corrected.calcium = "Corrected calcium",  
+    lab.bun.cre.ratio = "BUN/creatinine ratio",
+    
+    lab.wbc.lo.10_WBC.lowest.10. = "WBC low (10%)", 
+    lab.wbc.hi.10_WBC.highest.10. = "WBC High (10%)", 
+    lab.hct.lo.10_HCT.lowest.10. = "Hematocrit low (10%)",
+    lab.hct.hi.10_HCT.highest.10. = "Hematocrit high (10%)",  
+    lab.cre.hi.10_CRE.highest.10. = "Creatinine high (10%)", 
+    lab.sod.lo.10_SOD.lowest.10. = "Sodium low (10%)",  
+    lab.sod.hi.10_SOD.highest.10. = "Sodium high (10%)",  
+    lab.pot.lo.10_POT.lowest.10. = "Potassium low (10%)", 
+    lab.pot.hi.10_POT.highest.10. = "Potassium high (10%)", 
+    lab.alt.hi.10_ALT.highest.10. = "ALT high (10%)", 
+    lab.ast.hi.10_AST.highest.10. = "AST high (10%)", 
+    lab.bil.hi.10_BIL.highest.10. = "Bilirubin high (10%)", 
+    lab.bun.cre.hi.10_BUN.CRE.highest.10. = "BUN/creatinine ratio high (10%)",
+    lab.o2.lo.10_O2.lowest.10. = "O2 saturation low (10%)",      
+    
+    ins02_No.Medicare = "No Medicare",
+    ins03_No.Private.Insurance = "No Private Insurance",
+    ins04_Medicaid = "Has Medicaid",
+    ins05_Other.Insurance = "Has Other Insurance",
+    
+    testing_fct = "Training/Testing Set",                                              
+    testing_char = "Training/Testing Set"
+  )
+
+
+saveRDS(sages_table1_juiced,     file=path(r.objects.folder.tidymodel, "035_sages_table1_juiced.rds"))
+
+
+
