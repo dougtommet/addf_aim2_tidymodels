@@ -6,8 +6,8 @@ wflow_list_best_dich <- readRDS(file=path(r.objects.folder.tidymodel, "055_wflow
 sages_train_dich     <- readRDS(file=path(r.objects.folder.tidymodel, "030_sages_train_dich.rds"))
 sages_test_dich      <- readRDS(file=path(r.objects.folder.tidymodel, "030_sages_test_dich.rds"))
 model_names_dich     <- readRDS(file=path(r.objects.folder.tidymodel, "045_model_names_dich.rds"))
-model_df_dich     <- readRDS(file=path(r.objects.folder.tidymodel, 
-                                       "045_model_df_dich.rds"))
+model_df_dich        <- readRDS(file=path(r.objects.folder.tidymodel, 
+                                          "045_model_df_dich.rds"))
 
 ### Refit using the whole training data
 trained_models_list_dich <- map(.x = wflow_list_best_dich, 
@@ -25,16 +25,16 @@ predictions_dich <- results_list_dich %>%
   unnest(cols = c(value)) %>%
   group_by(model) %>%
   mutate(pred_pct_rank = percent_rank(.pred_Decline),
-         pred_decline_20 = case_when(pred_pct_rank > (1- 82/(82+339)) ~ "Decline",
+         pred_decline_67 = case_when(pred_pct_rank > (1- 286/(286+135)) ~ "Decline",
                                      TRUE ~ "No Decline"),
-         pred_decline_20 = factor(pred_decline_20, levels = c("Decline", "No Decline"))
+         pred_decline_67 = factor(pred_decline_67, levels = c("Decline", "No Decline"))
          ) %>%
   ungroup()
 
 
 decline.cutpoints_dich <- predictions_dich %>%
   group_by(model) %>%
-  filter(pred_decline_20 == "No Decline") %>%
+  filter(pred_decline_67 == "No Decline") %>%
   arrange(model, pred_pct_rank) %>%
   slice(1) %>%
   ungroup() %>%
@@ -44,7 +44,7 @@ decline.cutpoints_dich <- predictions_dich %>%
 results_conf_dich <- predictions_dich %>%
   group_by(model, model_fct) %>%
   nest() %>%
-  mutate(conf = map(.x = data, ~conf_mat(.x, true_decline, pred_decline_20)),
+  mutate(conf = map(.x = data, ~conf_mat(.x, true_decline, pred_decline_67)),
          conf_tidy = map(.x = conf, ~tidy(.x)),
          conf_summary = map(.x = conf, ~summary(.x)),
          auc = map(.x = data, ~roc_auc(.x, true_decline, .pred_Decline)))

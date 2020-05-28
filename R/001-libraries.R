@@ -1,4 +1,8 @@
 
+library(gtsummary)
+library(labelled)
+library(gt)
+
 library(tidyverse)
 library(haven)
 library(here)
@@ -12,6 +16,3 @@ library(recipes)
 library(workflows)
 library(tune)
 
-library(gtsummary)
-library(labelled)
-library(gt)

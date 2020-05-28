@@ -17,7 +17,7 @@ trained_models_list <- map(.x = wflow_list_best,
 results_list <- map(.x = trained_models_list, 
                     ~predict(.x, new_data = sages_test))
 results_list <- map(.x = results_list, 
-                    ~bind_cols(.x, sages_test %>% select(vdgcp_slope36m)))
+                    ~bind_cols(.x, sages_test %>% select(vdgcp_slope48m)))
 
 # saveRDS(model_names,     file=path(r.objects.folder.tidymodel, "060_model_names.rds"))
 saveRDS(results_list,    file=path(r.objects.folder.tidymodel, "060_results_list.rds"))
@@ -41,7 +41,7 @@ decline.cutpoints <- predictions %>%
 
 predictions <- predictions %>%
   left_join(decline.cutpoints, by = c("model", "model_fct")) %>%
-  mutate(true_decline = factor(vdgcp_slope36m > -.5, 
+  mutate(true_decline = factor(vdgcp_slope48m > -.5, 
                                labels = c("Decline", "No Decline")),
          pred_decline = factor(.pred > .pred_cutpoint, 
                         labels = c("Decline", "No Decline")))

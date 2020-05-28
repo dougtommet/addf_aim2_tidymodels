@@ -181,9 +181,9 @@ nneighbor_wflow_dich <- sages_wf_dich %>%
 # grid_list_dich <- list(glmnet_grid_dich, rf_grid_dich, boost_grid_dich, mars_grid_dich, nnet_grid_dich, svm_poly_grid_dich, svm_rbf_grid_dich, nneighbor_grid_dich)
 # model_names_dich <- c("glmnet", "rf", "boost", "mars", "nnet", "svm_poly", "svm_rbf", "nneighbor")
 
-wflow_list_dich <- list(logistic_wflow, glmnet_wflow_dich, mars_wflow_dich, rf_wflow_dich, boost_wflow_dich, nnet_wflow_dich, nneighbor_wflow_dich, svm_rbf_wflow_dich)
-grid_list_dich <- list(NULL,            glmnet_grid_dich,  mars_grid_dich,  rf_grid_dich,  boost_grid_dich,  nnet_grid_dich,  nneighbor_grid_dich,  svm_rbf_grid_dich)
-model_names_dich <- c("logistic",       "glmnet",          "mars",          "rf",          "boost",          "nnet",          "nneighbor",          "svm_rbf")
+wflow_list_dich  <- list(logistic_wflow, glmnet_wflow_dich, mars_wflow_dich, rf_wflow_dich, boost_wflow_dich, nnet_wflow_dich, nneighbor_wflow_dich, svm_rbf_wflow_dich)
+grid_list_dich   <- list(NULL,           glmnet_grid_dich,  mars_grid_dich,  rf_grid_dich,  boost_grid_dich,  nnet_grid_dich,  nneighbor_grid_dich,  svm_rbf_grid_dich)
+model_names_dich <- c("logistic",        "glmnet",          "mars",          "rf",          "boost",          "nnet",          "nneighbor",          "svm_rbf")
 
 model_df_dich <- tibble(model = model_names_dich) %>%
   mutate(model_fct = factor(model, 

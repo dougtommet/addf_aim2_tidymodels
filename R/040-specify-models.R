@@ -11,7 +11,7 @@ sages_train <- readRDS(file=path(r.objects.folder.tidymodel, "030_sages_train.rd
 
 
 
-sages_recipe <- recipes::recipe(vdgcp_slope36m ~ ., data = sages_train) %>%
+sages_recipe <- recipes::recipe(vdgcp_slope48m ~ ., data = sages_train) %>%
   update_role(studyid, new_role = "id") %>%
   recipes::step_knnimpute(starts_with("vdfriedfrail"), vdalcohol, 
                           vdiqc_proxy, vdgds15, vdhearingimp,
@@ -73,7 +73,7 @@ rf_grid <- expand_grid(mtry = c(3, 6, 9, 15, 20, 30),
 
 # rf_grid <- rf_tune_sages %>%
 #   parameters() %>%
-#   finalize(select(sages_train, -vdgcp_slope36m)) %>%  
+#   finalize(select(sages_train, -vdgcp_slope48m)) %>%  
 #   grid_max_entropy(size = 15)
 
 
@@ -98,7 +98,7 @@ boost_grid <- expand_grid(mtry = c(.3, .5, .7),
 
 # boost_grid <- boost_tune_sages %>%
 #   parameters() %>%
-#   finalize(select(sages_train, -vdgcp_slope36m)) %>%  
+#   finalize(select(sages_train, -vdgcp_slope48m)) %>%  
 #   grid_max_entropy(size = 25)
 
 # Workflow 
@@ -191,7 +191,7 @@ nneighbor_wflow <- sages_wf %>%
 # model_names <- c("linear", "glmnet", "rf", "boost", "mars", "nnet", "svm_poly", "svm_rbf", "nneighbor")
 
 wflow_list <- list(linear_wflow, glmnet_wflow, mars_wflow, rf_wflow, boost_wflow, nnet_wflow, nneighbor_wflow, svm_rbf_wflow)
-grid_list <- list(NULL,          glmnet_grid,  mars_grid,  rf_grid,  boost_grid,  nnet_grid,  nneighbor_grid,  svm_rbf_grid)
+grid_list  <- list(NULL,         glmnet_grid,  mars_grid,  rf_grid,  boost_grid,  nnet_grid,  nneighbor_grid,  svm_rbf_grid)
 model_names <- c("linear",       "glmnet",     "mars",     "rf",     "boost",     "nnet",     "nneighbor",     "svm_rbf")
 
 model_df <- tibble(model = model_names) %>%

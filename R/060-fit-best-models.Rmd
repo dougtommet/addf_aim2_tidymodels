@@ -23,7 +23,7 @@ This is the evaluation of the models in the testing set.
 
 ```{r}
 ### Get the R2
-rsq_results <- map(.x = results_list, ~rsq(.x, vdgcp_slope36m, .pred)) %>%
+rsq_results <- map(.x = results_list, ~rsq(.x, vdgcp_slope48m, .pred)) %>%
   enframe() %>%
   bind_cols(model = model_df) %>%
   unnest(cols = c(value)) %>%
@@ -35,7 +35,7 @@ rsq_results <- map(.x = results_list, ~rsq(.x, vdgcp_slope36m, .pred)) %>%
   select(-linear_rsq)
 
 ### Get the RMSE
-rmse_results <- map(.x = results_list, ~rmse(.x, vdgcp_slope36m, .pred)) %>%
+rmse_results <- map(.x = results_list, ~rmse(.x, vdgcp_slope48m, .pred)) %>%
   enframe() %>%
   bind_cols(model = model_df) %>%
   unnest(cols = c(value)) %>%
@@ -72,7 +72,7 @@ Figure of observed versus predicted slopes.
 ```{r, fig.height=9, fig.retina=TRUE}
 predictions %>%
   filter(model %in% models_to_present) %>%
-  ggplot(aes(x = vdgcp_slope36m, y = .pred, color = model_fct)) +
+  ggplot(aes(x = vdgcp_slope48m, y = .pred, color = model_fct)) +
     geom_point() +
     geom_smooth(se = FALSE, color = "black") +
     geom_abline(slope=1, color = "gray50") +

@@ -6,7 +6,8 @@ source(here::here("R", "002-folder_paths_and_options.R"))
 
 tuned_models_list <- readRDS(file=path(r.objects.folder.tidymodel,
                                        "050_tuned_models_list.rds"))
-model_names     <- readRDS(file=path(r.objects.folder.tidymodel, "040_model_names.rds"))
+model_names     <- readRDS(file=path(r.objects.folder.tidymodel,
+                                     "040_model_names.rds"))
 
 ```
 
