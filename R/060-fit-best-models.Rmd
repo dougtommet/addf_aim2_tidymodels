@@ -23,7 +23,7 @@ This is the evaluation of the models in the testing set.
 
 ```{r}
 ### Get the R2
-rsq_results <- map(.x = results_list, ~rsq(.x, vdgcp_slope48m, .pred)) %>%
+rsq_results <- map(.x = results_list, ~rsq(.x, vdgcp_slope36m, .pred)) %>%
   enframe() %>%
   bind_cols(model = model_df) %>%
   unnest(cols = c(value)) %>%
@@ -35,7 +35,7 @@ rsq_results <- map(.x = results_list, ~rsq(.x, vdgcp_slope48m, .pred)) %>%
   select(-linear_rsq)
 
 ### Get the RMSE
-rmse_results <- map(.x = results_list, ~rmse(.x, vdgcp_slope48m, .pred)) %>%
+rmse_results <- map(.x = results_list, ~rmse(.x, vdgcp_slope36m, .pred)) %>%
   enframe() %>%
   bind_cols(model = model_df) %>%
   unnest(cols = c(value)) %>%
@@ -69,30 +69,67 @@ rmse_results %>%
 
 Figure of observed versus predicted slopes.
 
-```{r, fig.height=9, fig.retina=TRUE}
+```{r, dpi = 300, out.width = "80%"}
 predictions %>%
   filter(model %in% models_to_present) %>%
-  ggplot(aes(x = vdgcp_slope48m, y = .pred, color = model_fct)) +
-    geom_point() +
+  ggplot(aes(x = vdgcp_slope36m, y = .pred, color = model_fct)) +
+    geom_point(size = .8) +
     geom_smooth(se = FALSE, color = "black") +
     geom_abline(slope=1, color = "gray50") +
     geom_vline(aes(xintercept = -.5), color = "gray50") +
     facet_wrap(vars(model_fct)) +
-    scale_x_continuous("Truth", 
-                       limits = c(-1.25, 0.25), 
-                       breaks = seq(-1.5, 0.5, by = 0.5)) +
-    scale_y_continuous("Prediction", 
-                       limits = c(-1.25, 0.25), 
-                       breaks = seq(-1.5, 0.5, by = 0.5))  +
+    scale_x_continuous("Observed slope", 
+                       limits = c(-.9, 0.1), 
+                       breaks = seq(-.9, 0.1, by = 0.2)) +
+    scale_y_continuous("Predicted slope", 
+                       limits = c(-.9, 0.1), 
+                       breaks = seq(-.9, 0.1, by = 0.2))  +
     geom_hline(data = decline.cutpoints %>%
                     filter(model %in% models_to_present), 
                aes(yintercept = .pred_cutpoint),
                color = "gray50") +
     QSPthemes::theme_qsp1() +
-    theme(legend.position="none",
-          plot.caption = element_text(hjust = 0)) +
+    theme(text             = element_text(family = hrbrthemes::font_an),
+          axis.title.y     = element_text(hjust = 1),
+          axis.title.x     = element_text(hjust = 1),
+          legend.position  = "none",
+          plot.caption     = element_text(hjust = 0),
+          aspect.ratio     = 1,
+          strip.text.x = element_text(size = 8)) +
   labs(caption = "Vertical line at slope = 0.5.  Horizontal line at 80th percentile of predictions.")
 
+ggsave(here::here("Figures", "AppendexFig1.png"), width=30, units = "cm" )
+ggsave(here::here("Figures", "AppendixFig1.svg"))
+```
+
+```{r, dpi = 300, out.width = "80%"}
+predictions %>%
+  filter(model %in% c("glmnet")) %>%
+  ggplot(aes(x = vdgcp_slope36m, y = .pred)) +
+    geom_point(color = "#C49A00") +
+    geom_smooth(se = FALSE, color = "black") +
+    geom_abline(slope=1, color = "gray50") +
+    geom_vline(aes(xintercept = -.5), color = "gray50") +
+    scale_x_continuous("Observed slope", 
+                       limits = c(-.9, 0.1), 
+                       breaks = seq(-.9, 0.1, by = 0.2)) +
+    scale_y_continuous("Predicted slope", 
+                       limits = c(-.9, 0.1), 
+                       breaks = seq(-.9, 0.1, by = 0.2))  +
+    geom_hline(data = decline.cutpoints %>%
+                    filter(model %in% c("glmnet")), 
+               aes(yintercept = .pred_cutpoint),
+               color = "gray50") +
+    QSPthemes::theme_qsp1() +
+    theme(text             = element_text(family = hrbrthemes::font_an),
+          axis.title.y     = element_text(hjust = 1),
+          axis.title.x     = element_text(hjust = 1),
+          legend.position  = "none",
+          plot.caption     = element_text(hjust = 0),
+          aspect.ratio     = 1) 
+
+ggsave(here::here("Figures", "Fig1.png"), width=30, units = "cm" )
+ggsave(here::here("Figures", "Fig1.svg"))
 ```
 
 ```{r, eval = FALSE}

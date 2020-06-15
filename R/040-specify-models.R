@@ -11,7 +11,7 @@ sages_train <- readRDS(file=path(r.objects.folder.tidymodel, "030_sages_train.rd
 
 
 
-sages_recipe <- recipes::recipe(vdgcp_slope48m ~ ., data = sages_train) %>%
+sages_recipe <- recipes::recipe(vdgcp_slope36m ~ ., data = sages_train) %>%
   update_role(studyid, new_role = "id") %>%
   recipes::step_knnimpute(starts_with("vdfriedfrail"), vdalcohol, 
                           vdiqc_proxy, vdgds15, vdhearingimp,
@@ -73,7 +73,7 @@ rf_grid <- expand_grid(mtry = c(3, 6, 9, 15, 20, 30),
 
 # rf_grid <- rf_tune_sages %>%
 #   parameters() %>%
-#   finalize(select(sages_train, -vdgcp_slope48m)) %>%  
+#   finalize(select(sages_train, -vdgcp_slope36m)) %>%  
 #   grid_max_entropy(size = 15)
 
 
@@ -98,7 +98,7 @@ boost_grid <- expand_grid(mtry = c(.3, .5, .7),
 
 # boost_grid <- boost_tune_sages %>%
 #   parameters() %>%
-#   finalize(select(sages_train, -vdgcp_slope48m)) %>%  
+#   finalize(select(sages_train, -vdgcp_slope36m)) %>%  
 #   grid_max_entropy(size = 25)
 
 # Workflow 

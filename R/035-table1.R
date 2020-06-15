@@ -4,7 +4,7 @@ source(here::here("R", "002-folder_paths_and_options.R"))
 sages.combined <- readRDS(file=path(r.objects.folder.tidymodel, "030_sages_combined.rds"))
 
 
-sages_table1_recipe <- recipes::recipe(vdgcp_slope48m ~ ., data = sages.combined) %>%
+sages_table1_recipe <- recipes::recipe(vdgcp_slope36m ~ ., data = sages.combined) %>%
   update_role(studyid, new_role = "id") %>%
   update_role(testing_fct, new_role = "dataset") %>%
   update_role(testing_char, new_role = "dataset") %>%
@@ -17,7 +17,7 @@ sages_table1_juiced <- juice(sages_table1_prepped)
 sages_table1_juiced <- sages_table1_juiced %>%
   select(
     studyid,
-    vdgcp_slope48m,
+    vdgcp_slope36m,
     vdage, 
     vdfemale_Female,
     vdeduc_r,
@@ -125,7 +125,7 @@ sages_table1_juiced <- sages_table1_juiced %>%
     testing_char
   ) %>%
   set_variable_labels(
-    vdgcp_slope48m = "Cognitive slope (48M)",
+    vdgcp_slope36m = "Cognitive slope (36M)",
     vdage = "Age",
     vdfemale_Female = "Female",
     vdeduc_r = "Education",

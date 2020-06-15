@@ -1,7 +1,7 @@
 
 # Objective
 
-The objective of this aim is to build models to predict cognitive decline over 48 months.  
+The objective of this aim is to build models to predict cognitive decline over 36 months.  
 
 ## Modeling
 

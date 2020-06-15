@@ -22,7 +22,7 @@ models_to_present_dich <- model_names_dich[!model_names_dich %in%
 
 ## Dichotomous outcome models
 
-```{r}
+```{r dpi = 300, out.width = "80%"}
 # predictions_dich %>%
 #   filter(model %in% models_to_present_dich) %>%
 #   group_by(model) %>%
@@ -72,7 +72,7 @@ foo_tidy <- results_conf_dich %>%
 
 ```
 
-The predicted probability of having cognitive decline was dichotomized at the 67th percentile to match the prevalence of cognitive decline.
+The predicted probability of having cognitive decline was dichotomized at the 20th percentile to match the prevalence of cognitive decline.
 
 Cross-tab table for observed versus predicted cognitive decline.
 ```{r}
