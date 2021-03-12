@@ -9,6 +9,8 @@ sages_table1_juiced  <- readRDS(file=path(r.objects.folder.tidymodel,
 # Table 1
 
 These are the variables used in the machine learning analyses.
+
+**Note:** 2021-03-13 - Added the variables Length of Stay and Dichotomized cognitive decline to the descriptive table, but they are not included in the analysis. 
 ```{r}
 
 sages_table1_juiced %>%
@@ -25,15 +27,15 @@ sages_table1_juiced %>%
   add_overall() %>%
   as_gt() %>%
   cols_move_to_end(columns = c(5, 4)) %>%
-  tab_row_group(group = "Insurance Type", rows = 77:80) %>%
-  tab_row_group(group = "Lab values (10%)", rows = 63:76) %>%
-  tab_row_group(group = "Lab values (Raw)", rows = 48:62) %>%
-  tab_row_group(group = "Surgery", rows = 44:47) %>%
-  tab_row_group(group = "Comorbidities", rows = 30:43) %>%
-  tab_row_group(group = "Health status", rows = 12:29) %>%
-  tab_row_group(group = "Health behaviors", rows = 8:11) %>%
-  tab_row_group(group = "Demographics", rows = 2:7) %>%
-  tab_row_group(group = "Outcome", rows = 1) %>%
+  tab_row_group(group = "Insurance Type", rows = 79:82) %>%
+  tab_row_group(group = "Lab values (10%)", rows = 65:78) %>%
+  tab_row_group(group = "Lab values (Raw)", rows = 50:64) %>%
+  tab_row_group(group = "Surgery", rows = 46:49) %>%
+  tab_row_group(group = "Comorbidities", rows = 32:45) %>%
+  tab_row_group(group = "Health status", rows = 14:31) %>%
+  tab_row_group(group = "Health behaviors", rows = 10:13) %>%
+  tab_row_group(group = "Demographics", rows = 3:9) %>%
+  tab_row_group(group = "Outcome", rows = 1:2) %>%
   tab_options(table.font.size = pct(80))
   
 

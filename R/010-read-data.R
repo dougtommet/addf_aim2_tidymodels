@@ -87,7 +87,7 @@ sages.apoe <- sages.apoe %>%
 sages.mr <- read_dta(path(sagesdatafolder.frozen, "SAGES-Medical-Record-Data-Analysis-File.dta"))
 attributes(sages.mr$studyid) <- NULL
 sages.mr <- sages.mr %>%
-  select("studyid", "vdcci", "vdvascom",  
+  select("studyid", "vdcci", "vdvascom", "vdlos",  
          "ins01", "ins02", "ins03", "ins04", "ins05", "op01", "ci01", "dep01", "op04a", "op04b", "op04c",
          "icd01a", "icd02a", "icd03a", "icd04a", "icd05a", "icd06a", "icd07a", "icd08a", "icd09a", "icd10a",
          "icd11a", "icd12a", "icd13a", "icd14a", "icd15a", "icd16a", "icd17a", "icd18a", "icd19a", "icd20a",

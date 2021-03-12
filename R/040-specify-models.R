@@ -9,7 +9,9 @@ sages_train <- readRDS(file=path(r.objects.folder.tidymodel, "030_sages_train.rd
 
 # https://www.brodrigues.co/blog/2020-03-08-tidymodels/
 
-
+# Removing the variable vdlos and true_decline, which were included for table 1
+sages_train <- sages_train %>%
+  select(-vdlos, -true_decline)
 
 sages_recipe <- recipes::recipe(vdgcp_slope36m ~ ., data = sages_train) %>%
   update_role(studyid, new_role = "id") %>%

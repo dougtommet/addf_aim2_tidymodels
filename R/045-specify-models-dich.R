@@ -7,6 +7,10 @@ sages_train_dich <- readRDS(file=path(r.objects.folder.tidymodel, "030_sages_tra
 
 # https://www.brodrigues.co/blog/2020-03-08-tidymodels/
 
+# Removing the variable vdlos and true_decline, which were included for table 1
+sages_train_dich <- sages_train_dich %>%
+  select(-vdlos)
+
 sages_recipe_dich <- recipes::recipe(true_decline ~ ., data = sages_train_dich) %>%
   update_role(studyid, new_role = "id") %>%
   recipes::step_knnimpute(starts_with("vdfriedfrail"), vdalcohol, 

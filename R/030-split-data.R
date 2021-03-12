@@ -9,7 +9,9 @@ covariates.to.use.1 <- variable.df %>%
   pull(variable)
 
 sages.combined <- sages.combined %>% 
-  select(studyid, vdgcp_slope36m, all_of(covariates.to.use.1))
+  select(studyid, vdgcp_slope36m, all_of(covariates.to.use.1), vdlos) %>%
+  mutate(true_decline = factor(vdgcp_slope36m > -.5, 
+                               labels = c("Decline", "No Decline")))
 
 # sages.combined <- sages.combined %>%
 #   select(-studyid, -vdsagesdeliriumever, -vdgcp_slope48m)
@@ -26,13 +28,9 @@ sages_folds <- bootstraps(sages_train, times = 25, strata = vdgcp_slope36m)
 
 # dichotomized version of the outcome
 sages_train_dich <- sages_train %>%
-  mutate(true_decline = factor(vdgcp_slope36m > -.5, 
-                               labels = c("Decline", "No Decline"))) %>%
   select(-vdgcp_slope36m) %>%
   select(true_decline, everything())
 sages_test_dich  <- sages_test %>%
-  mutate(true_decline = factor(vdgcp_slope36m > -.5, 
-                               labels = c("Decline", "No Decline"))) %>%
   select(-vdgcp_slope36m) %>%
   select(true_decline, everything())
 sages_folds_dich <- bootstraps(sages_train_dich, times = 25, strata = true_decline)

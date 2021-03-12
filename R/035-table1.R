@@ -18,6 +18,8 @@ sages_table1_juiced <- sages_table1_juiced %>%
   select(
     studyid,
     vdgcp_slope36m,
+    true_decline_No.Decline,
+    vdlos,
     vdage, 
     vdfemale_Female,
     vdeduc_r,
@@ -126,6 +128,8 @@ sages_table1_juiced <- sages_table1_juiced %>%
   ) %>%
   set_variable_labels(
     vdgcp_slope36m = "Cognitive slope (36M)",
+    true_decline_No.Decline = "Cognitive slope > -0.5",
+    vdlos = "Length of Stay",
     vdage = "Age",
     vdfemale_Female = "Female",
     vdeduc_r = "Education",
