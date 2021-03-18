@@ -72,6 +72,8 @@ Figure of observed versus predicted slopes.
 ```{r, dpi = 300, out.width = "80%"}
 predictions %>%
   filter(model %in% models_to_present) %>%
+  mutate(model_fct = fct_recode(model_fct, MARS = "Multivariate Adaptive Regression Splines"),
+         model_fct = fct_drop(model_fct)) %>%
   ggplot(aes(x = vdgcp_slope36m, y = .pred, color = model_fct)) +
     geom_point(size = .8) +
     geom_smooth(se = FALSE, color = "black") +
@@ -85,7 +87,9 @@ predictions %>%
                        limits = c(-.9, 0.1), 
                        breaks = seq(-.9, 0.1, by = 0.2))  +
     geom_hline(data = decline.cutpoints %>%
-                    filter(model %in% models_to_present), 
+                    filter(model %in% models_to_present) %>%
+    mutate(model_fct = fct_recode(model_fct, MARS = "Multivariate Adaptive Regression Splines"),
+           model_fct = fct_drop(model_fct)), 
                aes(yintercept = .pred_cutpoint),
                color = "gray50") +
     QSPthemes::theme_qsp1() +
